@@ -5,6 +5,7 @@ class Topic():
 		self.mediaFilePath = ''
 		self.script = ''
 		self.sttResult = ''
+		self.id = -1
 
 	def createTopic(self, title, genere, mediaFilePath, script):
 		self.id = 1
@@ -15,6 +16,10 @@ class Topic():
 		return self.id
 	def updateTopic(self):
 		pass
+	def updateTopic(self, id):
+		pass
+	def deleteTopic(self):
+		pass	
 	def deleteTopic(self, id):
 		pass
 	def retriveTopic(self, id):
