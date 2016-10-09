@@ -1,8 +1,6 @@
 import Topic
 
-BLUEMIX_USERNAME='breez7'
-BLUEMIX_PASSWORD='jdytwnb7'
-ALCHEMY_API_KEY=
+
 class TopicManager:
 	def addTopic(self,title, genere, path, script):
 		topic = Topic.Topic()
@@ -17,10 +15,10 @@ class TopicManager:
 		topic.retriveTopic(id)
 		
 		#TODO
-		sttResult = getSTTResult(topic.mediaFilePath)
+		sttResult = self.getSTTResult(topic.mediaFilePath)
 		topic.sttResult = sttResult
-		topic.updateTopic()
+		topic.updateTopic(id)
 
-	def getSTTResult(path):
-		pass
+	def getSTTResult(self, path):
+		return ''
 
