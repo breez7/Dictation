@@ -19,7 +19,8 @@ class TestEnglishStudy(unittest.TestCase):
 		script = 'hello man'
 		sttResult = 'hello man'
 
-		self.assertTrue(id = self.topicManager.addTopic(title, genere, path, script) > 0)
+		id = self.topicManager.addTopic(title, genere, path, script)
+		self.assertTrue( id > 0)
 		self.assertTrue(self.topicManager.getTopic(id) == (title,genere,path,script,''))
 
 		self.topicManager.analyseTopic(id)

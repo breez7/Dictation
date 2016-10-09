@@ -14,12 +14,9 @@ class Topic():
 		self.mediaFilePath = mediaFilePath
 		self.script= script
 		return self.id
-	def updateTopic(self):
-		pass
+
 	def updateTopic(self, id):
 		pass
-	def deleteTopic(self):
-		pass	
 	def deleteTopic(self, id):
 		pass
 	def retriveTopic(self, id):
