@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 import MySQLdb
 
-class Topic:
+class User:
 
     #database connection info
     host="localhost"
@@ -13,24 +13,23 @@ class Topic:
 
     #init method
     def __init__(self):
-        self.title = ""
-        self.genere = ""
-        self.mediaFilePath = ""
-        self.script = ""
-        self.sttResult = ""
-        self.id = -1
+        self.id = ""
+        self.name = ""
+        self.password = ""
+        self.descripttion = ""
+        self.email = ""
 
-    #createTopic method
-    def createTopic(self, title, genere, mediaFilePath, script):
+    #createUser method
+    def createUser(self, name, password, description, email):
 
         query = ""
 	try:
             connector = MySQLdb.connect(host, db, user, passwd, charset)
             cursor = connector.cursor()
 
-            setValue = "title='" + title + "',genere='" + genere + "',mediaFilePath='" + mediaFilePath + "',script='" + script + "'" 
+            setValue = "name='" + name + "',password='" + password + "',description='" + description + "',script='" + script + "'" 
 
-            query = "insert into topicTbl (title, genere, mediaFilePath, script) values(" + setValue +")"
+            query = "insert into userTbl (name, password, description, email) values(" + setValue +")"
 
             cursor.execute(sql)
             return cursor.last_insert_id()
@@ -38,12 +37,12 @@ class Topic:
             return -1
 
     #select method
-    def retriveTopic(self,id):
+    def retriveUser(self,id):
         try:
             connector = MySQLdb.connect(host, db, user, passwd, charset)
             cursor = connector.cursor()
 
-            query = "select id, title, genere, mediaFilePath, script from topicTbl where id=" + id
+            query = "select id, name, password, description, email from userTbl where id=" + id
 	    cursor.execute(query)
             rs = cursor.fetchall()
             return rs
@@ -51,38 +50,36 @@ class Topic:
             return -1
 
     #update method
-    def updateTopic(self, id, title, genere, mediaFilePath, script):
+    def updateUser(self, id, name, password, description, email):
         query = ""
         try:
             connector = MySQLdb.connect(host, db, user, passwd, charset)
             cursor = connector.cursor()
 
-            if title != '':
-                setQuery = "title = '" + title + "',"
-            if genere != '':
-                setQuery = setQuery + "genere ='" + genere + "',"
-            if mediaFilePath != '':
-                setQuery = setQuery + "mediaFilePath = '" + mediaFilePath + "',"
-            if script != '':
-                setQuery = setQuery + "script = '" + script + "',"
+            if name != '':
+                setQuery = "name = '" + name + "',"
+            if description != '':
+                setQuery = setQuery + "description ='" + description + "',"
+            if email != '':
+                setQuery = setQuery + "email = '" + email + "',"
         
             #last of comma delete
             setQuery = setQuery[0:len(setQuery)-1]
 
             print "setQuery = " + setQuery + "\n"
-            query = "update from topicTbl set " + setQuery + " where id="+id
+            query = "update from  userTbl set " + setQuery + " where id="+id
             print "query = " + query + "\n"
 	    cursor.execute(query)
         except:
             print "update failure : " + query
 
     #delete method
-    def deleteTopic(self,id):
+    def deleteUser(self,id):
         try:
             connector = MySQLdb.connect(host, db, user, passwd, charset)
             cursor = connector.cursor()
 
-            query = "delete from topicTbl where id=" + id
+            query = "delete from  userTbl where id=" + id
 	    cursor.execute(query)
         except:
             print "delete failure : " + query

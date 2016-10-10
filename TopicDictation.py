@@ -14,23 +14,21 @@ class Topic:
     #init method
     def __init__(self):
         self.title = ""
-        self.genere = ""
-        self.mediaFilePath = ""
-        self.script = ""
-        self.sttResult = ""
+        self.dateAt = ""
+        self.userWrittenScript = ""
         self.id = -1
 
-    #createTopic method
-    def createTopic(self, title, genere, mediaFilePath, script):
+    #create method
+    def createTopicDictation(self, title, dateAt, userWrittenScript):
 
         query = ""
 	try:
             connector = MySQLdb.connect(host, db, user, passwd, charset)
             cursor = connector.cursor()
 
-            setValue = "title='" + title + "',genere='" + genere + "',mediaFilePath='" + mediaFilePath + "',script='" + script + "'" 
+            setValue = "title='" + title + "',dateAt='" + dateAt+ "',userWrittenScript='" + userWrittenScript + "'" 
 
-            query = "insert into topicTbl (title, genere, mediaFilePath, script) values(" + setValue +")"
+            query = "insert into topicDictationTbl (title, dateAt, userWrittenScript) values(" + setValue +")"
 
             cursor.execute(sql)
             return cursor.last_insert_id()
@@ -38,12 +36,12 @@ class Topic:
             return -1
 
     #select method
-    def retriveTopic(self,id):
+    def retriveTopicDictation(self,id):
         try:
             connector = MySQLdb.connect(host, db, user, passwd, charset)
             cursor = connector.cursor()
 
-            query = "select id, title, genere, mediaFilePath, script from topicTbl where id=" + id
+            query = "select id, title, dateAt, userWrittenScript from topicDictationTbl where id=" + id
 	    cursor.execute(query)
             rs = cursor.fetchall()
             return rs
@@ -51,7 +49,7 @@ class Topic:
             return -1
 
     #update method
-    def updateTopic(self, id, title, genere, mediaFilePath, script):
+    def updateTopic(self, id, title, dateAt, userWrittenScript):
         query = ""
         try:
             connector = MySQLdb.connect(host, db, user, passwd, charset)
@@ -59,34 +57,31 @@ class Topic:
 
             if title != '':
                 setQuery = "title = '" + title + "',"
-            if genere != '':
-                setQuery = setQuery + "genere ='" + genere + "',"
-            if mediaFilePath != '':
-                setQuery = setQuery + "mediaFilePath = '" + mediaFilePath + "',"
-            if script != '':
-                setQuery = setQuery + "script = '" + script + "',"
+            if dateAt != '':
+                setQuery = setQuery + "dateAt ='" + dateAt + "',"
+            if userWrittenScript != '':
+                setQuery = setQuery + "userWrittenScript = '" + userWrittenScript + "',"
         
             #last of comma delete
             setQuery = setQuery[0:len(setQuery)-1]
 
             print "setQuery = " + setQuery + "\n"
-            query = "update from topicTbl set " + setQuery + " where id="+id
+            query = "update from topicDictationTbl set " + setQuery + " where id="+id
             print "query = " + query + "\n"
 	    cursor.execute(query)
         except:
             print "update failure : " + query
 
     #delete method
-    def deleteTopic(self,id):
+    def deleteTopicDictation(self,id):
         try:
             connector = MySQLdb.connect(host, db, user, passwd, charset)
             cursor = connector.cursor()
 
-            query = "delete from topicTbl where id=" + id
+            query = "delete from topicDictationTbl where id=" + id
 	    cursor.execute(query)
         except:
             print "delete failure : " + query
-
 
 top = Topic()
 top.retriveTopic(1)
