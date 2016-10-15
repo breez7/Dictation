@@ -1,3 +1,5 @@
+
+
 class Topic():
 	def __init__(self):
 		self.title = ''
@@ -5,7 +7,6 @@ class Topic():
 		self.mediaFilePath = ''
 		self.script = ''
 		self.sttResult = ''
-		self.id = -1
 
 	def createTopic(self, title, genere, mediaFilePath, script):
 		self.id = 1
@@ -14,8 +15,7 @@ class Topic():
 		self.mediaFilePath = mediaFilePath
 		self.script= script
 		return self.id
-
-	def updateTopic(self, id):
+	def updateTopic(self):
 		pass
 	def deleteTopic(self, id):
 		pass
@@ -25,7 +25,8 @@ class Topic():
 		return self.title, self.genere, self.mediaFilePath, self.script, self.sttResult
 
 	def loadDBValue(self,id):
-		self.title = 'testHello'
-		self.genere = 'greeting'
-		self.mediaFilePath = 'hello.mp3'
-		self.script = 'hello man'
+		import TestEnglishStudy
+		self.title = TestEnglishStudy.TestEnglishStudy.title
+		self.genere = TestEnglishStudy.TestEnglishStudy.genere
+		self.mediaFilePath = TestEnglishStudy.TestEnglishStudy.path
+		self.script = TestEnglishStudy.TestEnglishStudy.script
