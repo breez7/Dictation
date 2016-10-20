@@ -1,30 +1,28 @@
 import requests
-import Topic
+from Topic import Topic
 from pydub import AudioSegment
 
-#AudioSegment.converter = "C:/Users/breez/Dictation/ffmpeg/bin"
+import json
 
 class TopicManager:
 	def __init__(self):
 		self.stt = IBMSTT()
 
 	def addTopic(self,title, genere, path, script):
-		topic = Topic.Topic()
-		id = topic.createTopic(title,genere,path,script)
-		return id
+		topic = Topic()
+		topic.createTopic(title,genere,path,script)
+		return topic
 	def getTopic(self, id):
-		topic = Topic.Topic()
-		return topic.retriveTopic(id)
-	def analyseTopic(self, id):
-		topic = Topic.Topic()
+		topic = Topic()
 		topic.retriveTopic(id)
-		
+		return topic
+	def analyseTopic(self, topic):
 		sttResult = self.stt.translate(topic.mediaFilePath)
 		topic.sttResult = sttResult
 		topic.updateTopic()
-
-
-
+		return topic
+	def getAllTopics(self):
+		return None
 
 class IBMSTT:
 	URL = 'https://stream.watsonplatform.net/speech-to-text/api/v1/recognize?timestamps=true&continuous=true'	
@@ -37,12 +35,22 @@ class IBMSTT:
 		data = open(filePath, "rb")
 		res = requests.post(IBMSTT.URL, data=data, auth=(IBMSTT.USERNAME, IBMSTT.PASSWORD), headers=IBMSTT.HEADERS)
 		data.close()
-		print(res.text)	
+		return self.parseSTTResult(res.text)
 
 	def convertToWav(self,src):
 		if src.lower().endswith('mp3'):
 
 			sound = AudioSegment.from_mp3(src)
 			src = src[:-3] + 'wav'
-			sound.export("src", format="wav")
+			sound.export(src, format="wav")
 		return src
+
+	def parseSTTResult(self, sttResult):
+		sttResult = json.loads(sttResult)
+		sentences = []
+		result = sttResult['results']
+		for sentence in result:
+			transcript = sentence['alternatives'][0]['transcript']
+			words = sentence['alternatives'][0]['timestamps']
+			sentences.append([transcript, words])
+		return sentences	
