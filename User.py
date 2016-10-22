@@ -20,40 +20,61 @@ class User:
         self.email = ""
 
     #createUser method
-    def createUser(self, name, password, description, email):
+    def createUser(self, id, password, name, description, email):
 
         query = ""
+        #connector = MySQLdb.connect(host, db, user, passwd, charset)
+        connector = MySQLdb.connect(host="localhost", db="englishstudy", user="englishstudy", passwd="englishstudy", charset="utf8")
+
 	try:
-            connector = MySQLdb.connect(host, db, user, passwd, charset)
+            #connector = MySQLdb.connect(host, db, user, passwd, charset)
             cursor = connector.cursor()
 
-            setValue = "name='" + name + "',password='" + password + "',description='" + description + "',script='" + script + "'" 
+            query = """insert into userTbl (loginId, loginPw, name, description, email) values(%s,%s,%s,%s,%s);"""
 
-            query = "insert into userTbl (name, password, description, email) values(" + setValue +")"
+            cursor.execute(query,(id,password,name,description,email))
+            connector.commit()
+            #return cursor.last_insert_id()
+            return 'success'
 
-            cursor.execute(sql)
-            return cursor.last_insert_id()
         except:
+            import traceback
+            traceback.print_exc()
             return -1
+        finally:
+            connector.close()
+            
+
 
     #select method
     def retriveUser(self,id):
+        #connector = MySQLdb.connect(host, db, user, passwd, charset)
+        connector = MySQLdb.connect(host="localhost", db="englishstudy", user="englishstudy", passwd="englishstudy", charset="utf8")
+
         try:
-            connector = MySQLdb.connect(host, db, user, passwd, charset)
             cursor = connector.cursor()
 
-            query = "select id, name, password, description, email from userTbl where id=" + id
-	    cursor.execute(query)
+            query = "select loginId, loginPw,name, description, email from userTbl where id=%s"  
+	    cursor.execute(query, (id))
+            connector.commit()
             rs = cursor.fetchall()
-            return rs
+            print rs;
+            #return rs
         except:
+            import traceback
+            traceback.print_exc()
             return -1
+        finally:
+            connector.close()
 
     #update method
     def updateUser(self, id, name, password, description, email):
+
         query = ""
+
+        #connector = MySQLdb.connect(host, db, user, passwd, charset)
+        connector = MySQLdb.connect(host="localhost", db="englishstudy", user="englishstudy", passwd="englishstudy", charset="utf8")
         try:
-            connector = MySQLdb.connect(host, db, user, passwd, charset)
             cursor = connector.cursor()
 
             if name != '':
@@ -66,20 +87,41 @@ class User:
             #last of comma delete
             setQuery = setQuery[0:len(setQuery)-1]
 
-            print "setQuery = " + setQuery + "\n"
-            query = "update from  userTbl set " + setQuery + " where id="+id
-            print "query = " + query + "\n"
-	    cursor.execute(query)
+            query = "update userTbl set " + setQuery + " where id=%s"
+	    cursor.execute(query,(id))
+            connector.commit()
         except:
+            import traceback
+            traceback.print_exc()
             print "update failure : " + query
+        finally:
+            connector.close()
 
     #delete method
     def deleteUser(self,id):
+        #connector = MySQLdb.connect(host, db, user, passwd, charset)
+        connector = MySQLdb.connect(host="localhost", db="englishstudy", user="englishstudy", passwd="englishstudy", charset="utf8")
+        query = ''
+
         try:
-            connector = MySQLdb.connect(host, db, user, passwd, charset)
             cursor = connector.cursor()
 
-            query = "delete from  userTbl where id=" + id
-	    cursor.execute(query)
+            query = "delete from  userTbl where id=%s"
+	    cursor.execute(query,(id))
+            connector.commit()
+            print "delete success"
         except:
+            import traceback
+            traceback.print_exc()
             print "delete failure : " + query
+        finally:
+            connector.close()
+
+
+#test
+#user = User()
+#result=user.createUser('xiger8','1234','test','test description','xiger78@gmail.com');
+#result=user.retriveUser('7');
+#result=user.updateUser('7','nameupdate','1234','update description','xiger78@naver.com');
+#result=user.deleteUser('1');
+#print result
