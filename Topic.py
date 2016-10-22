@@ -24,37 +24,51 @@ class Topic:
     def createTopic(self, title, genere, mediaFilePath, script):
 
         query = ""
+        connector = MySQLdb.connect(host="localhost", db="englishstudy", user="englishstudy", passwd="englishstudy", charset="utf8")
+
 	try:
-            connector = MySQLdb.connect(host, db, user, passwd, charset)
             cursor = connector.cursor()
 
-            setValue = "title='" + title + "',genere='" + genere + "',mediaFilePath='" + mediaFilePath + "',script='" + script + "'" 
+            query = "insert into topicTbl (title, genere, mediaFilePath, scriptContent) values(%s,%s,%s,%s)"
 
-            query = "insert into topicTbl (title, genere, mediaFilePath, script) values(" + setValue +")"
-
-            cursor.execute(sql)
-            return cursor.last_insert_id()
+            cursor.execute(query, (title,genere,mediaFilePath,script))
+            #return cursor.last_insert_id()
+            connector.commit()
         except:
-            return -1
+            import traceback
+            traceback.print_exc()
+            return false
+        finally:
+            connector.close()
+#        return true
 
     #select method
     def retriveTopic(self,id):
+
+    	query = ""
+        connector = MySQLdb.connect(host="localhost", db="englishstudy", user="englishstudy", passwd="englishstudy", charset="utf8")
+
         try:
-            connector = MySQLdb.connect(host, db, user, passwd, charset)
             cursor = connector.cursor()
 
-            query = "select id, title, genere, mediaFilePath, script from topicTbl where id=" + id
-	    cursor.execute(query)
+            query = "select id, title, genere, mediaFilePath, scriptContent from topicTbl where id=%s"
+            cursor.execute(query, (id))
             rs = cursor.fetchall()
             return rs
         except:
-            return -1
+            import traceback
+            traceback.print_exc()
+            return false
+        finally:
+            connector.close()
 
     #update method
     def updateTopic(self, id, title, genere, mediaFilePath, script):
+
         query = ""
+        connector = MySQLdb.connect(host="localhost", db="englishstudy", user="englishstudy", passwd="englishstudy", charset="utf8")
+
         try:
-            connector = MySQLdb.connect(host, db, user, passwd, charset)
             cursor = connector.cursor()
 
             if title != '':
@@ -64,31 +78,49 @@ class Topic:
             if mediaFilePath != '':
                 setQuery = setQuery + "mediaFilePath = '" + mediaFilePath + "',"
             if script != '':
-                setQuery = setQuery + "script = '" + script + "',"
+                setQuery = setQuery + "scriptContent = '" + script + "',"
         
             #last of comma delete
             setQuery = setQuery[0:len(setQuery)-1]
 
             print "setQuery = " + setQuery + "\n"
-            query = "update from topicTbl set " + setQuery + " where id="+id
+            query = "update topicTbl set " + setQuery + " where id="+id
             print "query = " + query + "\n"
-	    cursor.execute(query)
+            cursor.execute(query)
+            connector.commit()
         except:
+            import traceback
+            traceback.print_exc()
             print "update failure : " + query
+            return false
+        finally:
+            connector.close()
+#        return true
 
     #delete method
     def deleteTopic(self,id):
+
+        query = ""
+        connector = MySQLdb.connect(host="localhost", db="englishstudy", user="englishstudy", passwd="englishstudy", charset="utf8")
+
         try:
-            connector = MySQLdb.connect(host, db, user, passwd, charset)
             cursor = connector.cursor()
 
-            query = "delete from topicTbl where id=" + id
-	    cursor.execute(query)
+            query = "delete from topicTbl where id=%s"
+            cursor.execute(query,(id))
+            connector.commit()
         except:
+            import traceback
+            traceback.print_exc()
             print "delete failure : " + query
+            return false
+        finally:
+            connector.close()
+#        return true
 
-	def loadDBValue(self,id):
-		self.title = 'testHello'
-		self.genere = 'greeting'
-		self.mediaFilePath = 'hello.mp3'
-		self.script = 'hello man'
+#topic = Topic()
+#result=topic.createTopic("topic title", "genere movie" , "move path", "script text")
+#result=topic.retriveTopic('1')
+#result=topic.updateTopic("2", "modified topic title", "modified movie" , "modified path", "modified script")
+#result=topic.deleteTopic('1');
+#print result
