@@ -70,14 +70,17 @@ def getTopicFile(filename):
 #     return result
 
 mSTT = ""
+
+
 @app.route('/gettopic/<id>')
 def getTopic(id):
     global mSTT
     topic = topicManager.getTopic(id)
     if mSTT == "":
         topicManager.analyseTopic(topic)
-        mSTT = topic.sttResult;
+        mSTT = topic.sttResult
     topic.sttResult = mSTT
+    topic.sttResult = topicManager.stt.parseSTTResult(topic.sttResult)
     result = str(topic.id) + '\r\n' + str(topic.title) + '\r\n' + str(topic.genere) + \
         '\r\n' + str(topic.script) + '\r\n' + str(topic.mediaFilePath) + '\r\n'
     if topic.sttResult:

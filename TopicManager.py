@@ -51,7 +51,8 @@ class IBMSTT:
         res = requests.post(IBMSTT.URL, data=data, auth=(
             IBMSTT.USERNAME, IBMSTT.PASSWORD), headers=IBMSTT.HEADERS)
         data.close()
-        return self.parseSTTResult(res.text)
+        #return self.parseSTTResult(res.text)
+        return res.text
 
     def convertToWav(self, src):
         if src.lower().endswith('mp3'):
