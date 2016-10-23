@@ -34,7 +34,7 @@ def addTopic():
             # return redirect(url_for('getTopicFile', filename=filename))
             # return redirect(url_for('getTopic', id=topic.id))
 
-            return str(topic.sttResult)
+            return topic.sttResult
 
     return '''
     <!doctype html>
@@ -75,15 +75,18 @@ mSTT = ""
 @app.route('/gettopic/<id>')
 def getTopic(id):
     global mSTT
-    topic = topicManager.getTopic(id)
-    if mSTT == "":
-        topicManager.analyseTopic(topic)
-        mSTT = topic.sttResult
-    topic.sttResult = mSTT
-    topic.sttResult = topicManager.stt.parseSTTResult(topic.sttResult)
+    topic = topicManager.getTopic(int(id))
+    if topic == None:
+        return 'Nothing'
+    # if mSTT == "":
+    #     topicManager.analyseTopic(topic)
+    #     mSTT = topic.sttResult
+    # topic.sttResult = mSTT
+
     result = str(topic.id) + '\r\n' + str(topic.title) + '\r\n' + str(topic.genere) + \
-        '\r\n' + str(topic.script) + '\r\n' + str(topic.mediaFilePath) + '\r\n'
+        '\r\n' + str(topic.script) + '\r\n' + str(topic.mediaFilePath.split('/')[-1]) + '\r\n'
     if topic.sttResult:
+        topic.sttResult = topicManager.stt.parseSTTResult(topic.sttResult)
         for sentence in topic.sttResult:
             result += sentence[0] + '\r\n'
             result += str(sentence[1]) + '\r\n'
@@ -96,6 +99,8 @@ def getTopic(id):
 def gettopics():
     result = ''
     topics = topicManager.getAllTopics()
+    if topics == None:
+        return "Nothing"
     for topic in topics:
         result += str(topic.id) + '\r\n' + str(topic.title) + '\r\n'
 
@@ -104,4 +109,6 @@ def gettopics():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
+
+    getTopic(1)
     # app.run()

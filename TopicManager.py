@@ -1,7 +1,7 @@
 import requests
 from Topic import Topic
 from pydub import AudioSegment
-
+from urllib import quote,unquote
 import json
 
 
@@ -16,7 +16,9 @@ class TopicManager:
 
     def getTopic(self, id):
         topic = Topic()
-        topic.retriveTopic(id)
+        result = topic.retriveTopic(id)
+        if result == None:
+            return None
         return topic
 
     def analyseTopic(self, topic):
@@ -26,19 +28,27 @@ class TopicManager:
         return topic
 
     def getAllTopics(self):
+
         # TODO
-        topica = Topic()
-        topica.id = 1
-        topica.title = 'BBC English'
-        topicb = Topic()
-        topicb.id = 2
-        topicb.title = 'CNN English'
-        topics = [topica, topicb]
+        utilTopic = Topic()
+        results = utilTopic.retriveTopicAll()
+        if results == None:
+            return None
+        topics = []
+        for result in results:
+            topic = Topic()
+            topic.id = result[0]
+            topic.title = result[1]
+            topic.genere = result[2]
+            topic.mediaFilePath = result[3]
+            topic.script = result[4]
+            topic.sttResult = unquote(result[5])
+            topics.append(topic)
         return topics
 
 
 class IBMSTT:
-    URL = 'https://stream.watsonplatform.net/speech-to-text/api/v1/recognize?timestamps=true&continuous=true'
+    URL = 'https://stream.watsonplatform.net/speech-to-text/api/v1/recognize?&timestamps=true&continuous=true'
     USERNAME = "12dd2d69-9bb7-45c7-8bc9-c193bd2dba63"
     PASSWORD = "rnAnWqvZvHzt"
     HEADERS = {"Content-Type": "audio/wav",
@@ -71,3 +81,7 @@ class IBMSTT:
             words = sentence['alternatives'][0]['timestamps']
             sentences.append([transcript, words])
         return sentences
+
+if __name__ == '__main__':
+    stt = IBMSTT()
+    stt.convertToWav('./uploads/bbc.mp3')
