@@ -23,6 +23,10 @@
             </intent-filter>
         </activity>
         <service android:name=".Player" />
+        <receiver android:name=".RemoteControlReceiver" />
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
 
 
     </application>
