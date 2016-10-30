@@ -1,15 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf8 -*-
-import MySQLdb
+import sqlite3
+import sys
+import os
+from urllib import quote,unquote
+
+dbfile = 'word.db'
 
 class Word:
-
-    #database connection info
-    host="localhost"
-    db="englishstudy"
-    user="enlishstudy"
-    passwd="englishstudy"
-    charset="utf8"
 
     #init method
     def __init__(self):
@@ -26,71 +24,128 @@ class Word:
     def createWord(self, word, proun, sentencelnTopic, meanlnDict, etc, viewCount, feedback):
 
         query = ""
-	try:
-            connector = MySQLdb.connect(host, db, user, passwd, charset)
+        connector = sqlite3.connect(dbfile)
+
+        try:
             cursor = connector.cursor()
+            
+            query = "insert into wordTbl (word, proun, sentencelnTopic, meanlnDict,etc,viewCount,feedback) values(?,?,?,?,?,?,?)"
 
-            setValue = "word='" + word + "',proun='" + proun + "',sentencelnTopic='" + sentencelnTopic + "',meanlnDict='" + meanlnDict + "',etc='" + etc +"',viewCount='" + viewCount + "',feedback='" + feedback + "'"  
-
-            query = "insert into userTbl (word, proun, sentencelnTopic, meanlnDict,etc,viewCount,feedback) values(" + setValue +")"
-
-            cursor.execute(sql)
-            return cursor.last_insert_id()
+            cursor.execute(sql,(word, proun, sentencelnTopic, meanlnDict, etc, viewCount, feedback))
+            self.id = cursor.lastrowid
+            connector.commit()
         except:
+            import traceback
+            traceback.print_exc()
             return -1
+        finally:
+            connector.close()
+        return self.id
 
     #select method
     def retriveWord(self,id):
+
+        query = ""
+        connector = sqlite3.connect(dbfile)
+
         try:
-            connector = MySQLdb.connect(host, db, user, passwd, charset)
             cursor = connector.cursor()
 
-            query = "select id, word, proun, sentencelnTopic, meanlnDict,etc,viewCount,feedback from  userTbl where id=" + id
-	    cursor.execute(query)
+            query = "select id, word, proun, sentencelnTopic, meanlnDict,etc,viewCount,feedback from wordTbl where id=" + str(id)
+            cursor.execute(query)
+            if len(rs) == 0 or id != rs[0][0]:
+                return None
+            self.id = id
+            self.word = rs[0][1]
+            self.proun = rs[0][2]
+            self.sentencelnTopic = rs[0][3]
+            self.meanlnDict = rs[0][4]
+            self.etc = rs[0][5]
+            self.viewCount = rs[0][6]
+            self.feedback = rs[0][7]
+            return rs
+        except:
+            import traceback
+            traceback.print_exc()
+            return None
+        finally:
+            connector.close()
+
+    #select method
+    def retriveWordAll(self):
+
+        query = ""
+        connector = sqlite3.connect(dbfile)
+
+        try:
+            cursor = connector.cursor()
+
+            query = "select id, word, proun, sentencelnTopic, meanlnDict,etc,viewCount,feedback from wordTbl"
+            cursor.execute(query)
             rs = cursor.fetchall()
             return rs
         except:
-            return -1
+            import traceback
+            traceback.print_exc()
+            return None
+        finally:
+            connector.close()
 
     #update method
-    def updateWord(self, id, word, proun, sentencelnTopic, meanlnDict,etc,viewCount, feedback):
+    def updateWord(self):
+
         query = ""
+        connector = sqlite3.connect(dbfile)
+
         try:
-            connector = MySQLdb.connect(host, db, user, passwd, charset)
             cursor = connector.cursor()
 
             if word != '':
-                setQuery = "word = '" + word + "',"
+                setQuery = "word = '" + self.word + "',"
             if proun != '':
-                setQuery = setQuery + "proun ='" + proun + "',"
+                setQuery = setQuery + "proun ='" + self.proun + "',"
             if sentencelnTopic != '':
-                setQuery = setQuery + "sentencelnTopic = '" + sentencelnTopic + "',"
+                setQuery = setQuery + "sentencelnTopic = '" + self.sentencelnTopic + "',"
             if meanlnDict != '':
-                setQuery = setQuery + "meanlnDict = '" + meanlnDict + "',"
+                setQuery = setQuery + "meanlnDict = '" + self.meanlnDict + "',"
             if etc != '':
-                setQuery = setQuery + "etc = '" + etc + "',"
+                setQuery = setQuery + "etc = '" + self.etc + "',"
             if viewCount != '':
-                setQuery = setQuery + "viewCount = '" + viewCount + "',"
+                setQuery = setQuery + "viewCount = '" + self.viewCount + "',"
             if feedback != '':
-                setQuery = setQuery + "feedback = '" + feedback + "',"
+                setQuery = setQuery + "feedback = '" + self.feedback + "',"
         
             #last of comma delete
             setQuery = setQuery[0:len(setQuery)-1]
 
-            print "setQuery = " + setQuery + "\n"
-            query = "update from  wordTbl set " + setQuery + " where id="+id
-            print "query = " + query + "\n"
-	    cursor.execute(query)
+            query = "update from wordTbl set " + setQuery + " where id=?"
+            cursor.execute(query,(self.id))
+            connector.commit()
         except:
+            import traceback
+            traceback.print_exc()
             print "update failure : " + query
+            return False
+        finally:
+            connector.close()
+        return True
 
     #delete method
     def deleteWord(self,id):
+        query = ""
+        connector = sqlite3.connect(dbfile)
+
         try:
-            connector = MySQLdb.connect(host, db, user, passwd, charset)
             cursor = connector.cursor()
 
-            query = "delete from  wordTbl where id=" + id
-	    cursor.execute(query)
+            query = "delete from wordTbl where id=" + str(id)
+            cursor.execute(query)
+            connector.commit()
         except:
+            import traceback
+            traceback.print_exc()
             print "delete failure : " + query
+            return False
+        finally:
+            connector.close()
+        return True
